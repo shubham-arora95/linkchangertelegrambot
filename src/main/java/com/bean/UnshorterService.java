@@ -63,37 +63,27 @@ public class UnshorterService {
 
 	}
 
-	public Map<String, String> unshortURL(List<String> shortenURLList) {
+	public Map<String, String> unshortURL(List<String> shortenURLList) throws URISyntaxException, IOException {
 		Map<String, String> output = new HashMap<>();
 
 		for (String s : shortenURLList) {
-			try {
-				String unshortedURL = s;
-				if (!s.contains("amazon") && !s.contains("flipkart")) {
-					unshortedURL = unshortenUrl(s);
-					if (unshortedURL.contains("earnkaro")) {
-						unshortedURL = unshortedURL.split("&dl=")[1];
-						unshortedURL = URLDecoder.decode(unshortedURL);
-					} else if (unshortedURL.contains("paisawapas.com")) {
-						unshortedURL = unshortedURL.split("&url=")[1];
-						unshortedURL = URLDecoder.decode(unshortedURL);
-					} else if (unshortedURL.contains("linksredirect")) {
-						unshortedURL = unshortedURL.split("&url=")[1];
-						unshortedURL = URLDecoder.decode(unshortedURL);
-					}
+			String unshortedURL = s;
+			if (!s.contains("amazon") && !s.contains("flipkart")) {
+				unshortedURL = unshortenUrl(s);
+				if (unshortedURL.contains("earnkaro")) {
+					unshortedURL = unshortedURL.split("&dl=")[1];
+					unshortedURL = URLDecoder.decode(unshortedURL);
+				} else if (unshortedURL.contains("paisawapas.com")) {
+					unshortedURL = unshortedURL.split("&url=")[1];
+					unshortedURL = URLDecoder.decode(unshortedURL);
+				} else if (unshortedURL.contains("linksredirect")) {
+					unshortedURL = unshortedURL.split("&url=")[1];
+					unshortedURL = URLDecoder.decode(unshortedURL);
 				}
-				String shortURL = chnageToOurAffliate(unshortedURL);
-				// String shortURL = shortURL(unshortedURL);
-				output.put(s, shortURL);
-
-				// Now short url
-				// Then put it in a map, then we will replace each previous url by key and new
-				// url by value
-
-			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			String shortURL = chnageToOurAffliate(unshortedURL);
+			output.put(s, shortURL);
+
 		}
 
 		return output;
@@ -132,9 +122,8 @@ public class UnshorterService {
 		}
 
 		if (isAmazonDeal) {
-			//return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
-			return generateFlipkartShortLinks
-					.generateAmazonShortLinks(unshortenUrl);
+			// return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
+			return generateFlipkartShortLinks.generateAmazonShortLinks(unshortenUrl);
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
 			return generateFlipkartShortLinks
@@ -232,24 +221,27 @@ public class UnshorterService {
 	}
 
 	public String changedDeal(String deal) {
-
 		deal = replaceWords(deal);
 		List<String> urls = extractUrls(deal);
-		Map<String, String> changedURLMap = unshortURL(urls);
+		try {
+			Map<String, String> changedURLMap = unshortURL(urls);
 
-		for (Map.Entry<String, String> entry : changedURLMap.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			while (deal.contains(key)) {
-				if (null != value) {
-					deal = deal.replace(key, value);
-				} else {
-					deal = deal.replace(key, "Unable to create");
+			for (Map.Entry<String, String> entry : changedURLMap.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue();
+				if (deal.contains(key)) {
+					if (null != value) {
+						deal = deal.replace(key, value);
+					} else {
+						deal = deal.replace(key, "Unable to create");
+					}
 				}
 			}
-		}
 
-		return deal;
+			return deal;
+		} catch (Exception e) {
+			return e.getLocalizedMessage();
+		}
 	}
 
 	public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {

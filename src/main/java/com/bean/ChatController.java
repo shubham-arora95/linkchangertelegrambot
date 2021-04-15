@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.SendResponse;
 
 @RestController
-public class ChatController extends TelegramLongPollingBot {
+public class ChatController {
 
 	@Autowired
 	private ChatService chatService;
@@ -23,11 +23,12 @@ public class ChatController extends TelegramLongPollingBot {
 
 	@GetMapping("/start")
 	public String start() {
-		TelegramBotsApi telegramBotApi;
 		try {
-			telegramBotApi = new TelegramBotsApi(DefaultBotSession.class);
-			telegramBotApi.registerBot(this);
-		} catch (TelegramApiException e1) {
+			TelegramBot bot = new TelegramBot(getBotToken());
+			bot.setUpdatesListener(updates -> {
+				return onUpdateReceived(bot, updates);
+			});
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
@@ -42,35 +43,31 @@ public class ChatController extends TelegramLongPollingBot {
 		return "Done";
 	}
 
-	@Override
-	public void onUpdateReceived(Update update) {
-		if (update.getMessage() != null) {
-			String changedDeal = unshorterService.changedDeal(update.getMessage().getText());
-			chatService.saveChat(update.getMessage().getChatId());
+	public int onUpdateReceived(TelegramBot bot, List<Update> updates) {
+		for (Update update : updates) {
+			String changedDeal = null;
+			if (update.message().text() != null) {
+				changedDeal = unshorterService.changedDeal(update.message().text());
+			} else if (update.message().caption() != null) {
+				changedDeal = unshorterService.changedDeal(update.message().caption());
+			}
+			chatService.saveChat(update.message().chat().id());
+			postMessage(bot, changedDeal);
+		}
+		return UpdatesListener.CONFIRMED_UPDATES_ALL;
+	}
+
+	private void postMessage(TelegramBot bot, String changedDeal) {
+		if(changedDeal != null) {
 			List<Chat> chats = chatService.getAllChats();
 			for (Chat c : chats) {
-				SendMessage snd = new SendMessage();
-				snd.disableWebPagePreview();
-				snd.setChatId(c.getChatIdFromTelegram().toString());
-				snd.setText(changedDeal);
-				try {
-					execute(snd);
-				} catch (TelegramApiException e) {
-					e.printStackTrace();
-				}
+				SendMessage snd = new SendMessage(c.getChatIdFromTelegram().toString(), changedDeal);
+				snd.disableWebPagePreview(true);
+				SendResponse response = bot.execute(snd);
 			}
-
-		} else if (update.getChannelPost() != null) {
-			chatService.saveChat(update.getChannelPost().getChat().getId());
 		}
 	}
 
-	@Override
-	public String getBotUsername() {
-		return Constants.USERNAME;
-	}
-
-	@Override
 	public String getBotToken() {
 		return Constants.BOTTOKEN;
 	}

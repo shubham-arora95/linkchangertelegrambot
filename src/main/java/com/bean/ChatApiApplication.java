@@ -19,7 +19,7 @@ public class ChatApiApplication {
 
 		URL url;
 		try {
-			url = new URL(System.getenv("StartingURL"));
+			url = new URL(System.getenv("STARTING_URL"));
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setRequestProperty("accept", "application/json");
