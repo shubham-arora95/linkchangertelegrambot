@@ -37,8 +37,8 @@ public class UnshorterService {
 	GenerateFlipkartShortLinks generateFlipkartShortLinks = new GenerateFlipkartShortLinks();
 
 	static {
-		amazonAffialteIdList.add("dealsalert13-21");
-		flipkartAffialteIdList.add("vishalkum20");
+		amazonAffialteIdList.add(System.getenv("AMAZON_TRACKING_ID"));
+		flipkartAffialteIdList.add(System.getenv("FLIPKART_TRACKING_ID"));
 	}
 
 	public String getDomainName(String urlString) {
