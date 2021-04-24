@@ -122,8 +122,8 @@ public class UnshorterService {
 		}
 
 		if (isAmazonDeal) {
-			// return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
-			return generateFlipkartShortLinks.generateAmazonShortLinks(unshortenUrl);
+			//return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
+			return generateFlipkartShortLinks.generateAmazonShortLinks(changeAmazonDealLink(unshortenUrl, queryParams));
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
 			return generateFlipkartShortLinks
@@ -224,6 +224,8 @@ public class UnshorterService {
 		deal = replaceWords(deal);
 		List<String> urls = extractUrls(deal);
 		try {
+			String dealTitle = deal.lines().findFirst().get();
+			deal = deal.replace(dealTitle, "*✅ " + dealTitle + "*");
 			Map<String, String> changedURLMap = unshortURL(urls);
 
 			for (Map.Entry<String, String> entry : changedURLMap.entrySet()) {

@@ -44,6 +44,9 @@ public class ChatController {
 	}
 
 	public int onUpdateReceived(TelegramBot bot, List<Update> updates) {
+		if (updates.size() > 12) {
+			return UpdatesListener.CONFIRMED_UPDATES_ALL;
+		}
 		for (Update update : updates) {
 			String changedDeal = null;
 			if (update.message().text() != null) {
@@ -58,7 +61,7 @@ public class ChatController {
 	}
 
 	private void postMessage(TelegramBot bot, String changedDeal) {
-		if(changedDeal != null) {
+		if (changedDeal != null) {
 			List<Chat> chats = chatService.getAllChats();
 			for (Chat c : chats) {
 				SendMessage snd = new SendMessage(c.getChatIdFromTelegram().toString(), changedDeal);
