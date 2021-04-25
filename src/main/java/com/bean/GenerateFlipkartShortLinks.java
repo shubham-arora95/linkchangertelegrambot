@@ -85,7 +85,11 @@ public class GenerateFlipkartShortLinks {
 			String jsonString = response.body().string();
 			HashMap<String, Object> map = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, Object>>() {
 			}.getType());
-			return (String) map.get("shortUrl");
+			if (map.get("shortUrl") != null)
+				return (String) map.get("shortUrl");
+			else if (map.get("shortUrl") == null && map.get("longUrl") != null)
+				return ShortURLService.shortURL(longLink);
+			return longLink;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

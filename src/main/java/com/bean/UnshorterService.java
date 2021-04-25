@@ -22,9 +22,6 @@ import java.util.regex.Pattern;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Service;
 
-import fr.plaisance.bitly.Bit;
-import fr.plaisance.bitly.Bitly;
-
 @Service
 public class UnshorterService {
 
@@ -60,8 +57,9 @@ public class UnshorterService {
 
 	}
 
-	public Map<String, String> unshortURL(List<String> shortenURLList) throws URISyntaxException, IOException {
-		Map<String, String> output = new HashMap<>();
+	public Map<String, Map<String, String>> unshortURL(List<String> shortenURLList)
+			throws URISyntaxException, IOException {
+		Map<String, Map<String, String>> output = new HashMap<>();
 
 		for (String s : shortenURLList) {
 			String unshortedURL = s;
@@ -78,15 +76,18 @@ public class UnshorterService {
 					unshortedURL = URLDecoder.decode(unshortedURL);
 				}
 			}
-			String shortURL = chnageToOurAffliate(unshortedURL);
-			output.put(s, shortURL);
+			Map shortURLMap = chnageToOurAffliate(unshortedURL);
+			output.put(s, shortURLMap);
 
 		}
 
 		return output;
 	}
 
-	private String chnageToOurAffliate(String unshortenUrl) throws URISyntaxException, UnsupportedEncodingException {
+	private Map<String, String> chnageToOurAffliate(String unshortenUrl)
+			throws URISyntaxException, UnsupportedEncodingException {
+		Map<String, String> returnMap = new HashMap<>();
+
 		Map<String, List<String>> queryParams = splitQuery(unshortenUrl);
 
 		unshortenUrl = replaceWords(unshortenUrl);
@@ -99,12 +100,21 @@ public class UnshorterService {
 		}
 
 		if (isAmazonDeal) {
-			//return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
-			return generateFlipkartShortLinks.generateAmazonShortLinks(changeAmazonDealLink(unshortenUrl, queryParams));
+			String mrp = GetGoogleSheetContent.getMRPFromAmazon(unshortenUrl);
+			String ourAffiliateURL = generateFlipkartShortLinks
+					.generateAmazonShortLinks(changeAmazonDealLink(unshortenUrl, queryParams));
+			// return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
+			returnMap.put("mrp", mrp);
+			returnMap.put("ourAffiliateURL", ourAffiliateURL);
+			return returnMap;
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
-			return generateFlipkartShortLinks
+			String mrp = GetGoogleSheetContent.getMRPFromFlipkart(unshortenUrl);
+			String ourAffiliateURL = generateFlipkartShortLinks
 					.generateShortURL(generateFlipkartShortLinks.getFullFlipkartURL(unshortenUrl));
+			returnMap.put("mrp", mrp);
+			returnMap.put("ourAffiliateURL", ourAffiliateURL);
+			return returnMap;
 		}
 
 		return null;
@@ -201,18 +211,22 @@ public class UnshorterService {
 		deal = replaceWords(deal);
 		List<String> urls = extractUrls(deal);
 		try {
-			if(deal.indexOf("\n") != -1) {
+			if (deal.indexOf("\n") != -1) {
 				String dealTitle = deal.substring(0, deal.indexOf("\n"));
 				deal = deal.replace(dealTitle, "*✅ " + dealTitle + "*");
 			}
-			Map<String, String> changedURLMap = unshortURL(urls);
+			Map<String, Map<String, String>> changedURLMap = unshortURL(urls);
 
-			for (Map.Entry<String, String> entry : changedURLMap.entrySet()) {
+			for (Map.Entry<String, Map<String, String>> entry : changedURLMap.entrySet()) {
 				String key = entry.getKey();
-				String value = entry.getValue();
+				Map<String, String> shortURLMap = entry.getValue();
 				if (deal.contains(key)) {
-					if (null != value) {
-						deal = deal.replace(key, value);
+					if (null != shortURLMap.get("ourAffiliateURL")) {
+						String mrpString = null;
+						if (shortURLMap.get("mrp") != null) {
+							mrpString = "\n\n" + "MRP Rs " + shortURLMap.get("mrp");
+						}
+						deal = deal.replace(key, shortURLMap.get("ourAffiliateURL") + mrpString);
 					} else {
 						deal = deal.replace(key, "Unable to create");
 					}

@@ -21,7 +21,11 @@ public class ShortURLService {
 			try {
 				shortURL = bitly.shorten(unshortedURL);
 			} catch (Exception e) {
-				return null;
+				if(currentBitlyIndex < bitlyTokens.size()) {
+					currentBitlyIndex++;
+					currentBitlyToken = bitlyTokens.get(currentBitlyIndex);
+					shortURL(unshortedURL);
+				}
 			}
 		}
 		return shortURL;

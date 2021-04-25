@@ -77,7 +77,41 @@ public class GetGoogleSheetContent {
 		return returnList;
 	}
 
-	/*
-	 * public static void main(String[] args) { getReplaceSheetContent(); }
-	 */
+	public static String getMRPFromAmazon(String amazonURL) {
+		try {
+			Integer mrp = null;
+			Document doc = Jsoup.connect(amazonURL).header("User-Agent",
+					"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0").get();
+			Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
+			if (elements.size() > 0) {
+				String mrpString = elements.get(0).text().replaceAll("₹", "");
+				mrpString = mrpString.replaceAll(" ", "");
+				mrpString = mrpString.replaceAll(",", "");
+				Double mrpDouble = Double.parseDouble(mrpString);
+				mrp = mrpDouble.intValue();
+			}
+			return mrp.toString();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static String getMRPFromFlipkart(String flipkartURL) {
+		try {
+			Integer mrp = null;
+			Document doc = Jsoup.connect(flipkartURL).header("User-Agent",
+					"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0").get();
+			Elements elements = doc.getElementsByClass("_3I9_wc _2p6lqe");
+			if (elements.size() > 0) {
+				String mrpString = elements.get(0).text().replaceAll("₹", "");
+				mrpString = mrpString.replaceAll(" ", "");
+				mrpString = mrpString.replaceAll(",", "");
+				Double mrpDouble = Double.parseDouble(mrpString);
+				mrp = mrpDouble.intValue();
+			}
+			return mrp.toString();
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }
