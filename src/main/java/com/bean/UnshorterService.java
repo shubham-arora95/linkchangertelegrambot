@@ -226,7 +226,7 @@ public class UnshorterService {
 						if (shortURLMap.get("mrp") != null) {
 							mrpString = "\n\n" + "MRP Rs " + shortURLMap.get("mrp");
 						}
-						deal = deal.replace(key, shortURLMap.get("ourAffiliateURL") + mrpString != null ? mrpString : "");
+						deal = deal.replace(key, shortURLMap.get("ourAffiliateURL") + (mrpString != null ? mrpString : ""));
 					} else {
 						deal = deal.replace(key, "Unable to create");
 					}
