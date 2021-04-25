@@ -55,6 +55,9 @@ public class ChatController {
 			} else if (update.message() != null && update.message().caption() != null) {
 				changedDeal = unshorterService.changedDeal(update.message().caption());
 				chatService.saveChat(update.message().chat().id());
+			} else if(update.channelPost() != null && update.channelPost().text() != null) {
+				changedDeal = unshorterService.changedDeal(update.channelPost().text());
+				chatService.saveChat(update.channelPost().chat().id());
 			}
 			
 			postMessage(bot, changedDeal);
