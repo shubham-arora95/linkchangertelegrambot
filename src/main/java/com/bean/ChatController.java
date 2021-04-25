@@ -49,12 +49,14 @@ public class ChatController {
 		}
 		for (Update update : updates) {
 			String changedDeal = null;
-			if (update.message().text() != null) {
+			if (update.message() != null && update.message().text() != null) {
 				changedDeal = unshorterService.changedDeal(update.message().text());
-			} else if (update.message().caption() != null) {
+				chatService.saveChat(update.message().chat().id());
+			} else if (update.message() != null && update.message().caption() != null) {
 				changedDeal = unshorterService.changedDeal(update.message().caption());
+				chatService.saveChat(update.message().chat().id());
 			}
-			chatService.saveChat(update.message().chat().id());
+			
 			postMessage(bot, changedDeal);
 		}
 		return UpdatesListener.CONFIRMED_UPDATES_ALL;
