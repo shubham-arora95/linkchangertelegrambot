@@ -39,7 +39,7 @@ public class ChatController {
 	public String reset() {
 		GetGoogleSheetContent.resetBitlyTokensList();
 		GetGoogleSheetContent.resetReplaceMap();
-		UnshorterService.currentBitlyToken = null;
+		ShortURLService.currentBitlyToken = null;
 		return "Done";
 	}
 

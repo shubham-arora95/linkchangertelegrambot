@@ -80,7 +80,7 @@ public class GenerateFlipkartShortLinks {
 		try (Response response = httpClient.newCall(request).execute()) {
 
 			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
+				return ShortURLService.shortURL(longLink);
 
 			String jsonString = response.body().string();
 			HashMap<String, Object> map = new Gson().fromJson(jsonString, new TypeToken<HashMap<String, Object>>() {

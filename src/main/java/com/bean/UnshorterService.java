@@ -30,9 +30,6 @@ public class UnshorterService {
 
 	public static final List<String> amazonAffialteIdList = new ArrayList<String>();
 	public static final List<String> flipkartAffialteIdList = new ArrayList<String>();
-	public static String currentBitlyToken = null;
-	public static int currentBitlyIndex = 0;
-	public static List<String> bitlyTokens = GetGoogleSheetContent.getBitlyTokensList();
 	public static Map<String, String> replaceSheetMap = GetGoogleSheetContent.getReplaceSheetMap();
 	GenerateFlipkartShortLinks generateFlipkartShortLinks = new GenerateFlipkartShortLinks();
 
@@ -87,26 +84,6 @@ public class UnshorterService {
 		}
 
 		return output;
-	}
-
-	private String shortURL(String unshortedURL) {
-		if (currentBitlyToken == null) {
-			currentBitlyToken = bitlyTokens.get(currentBitlyIndex);
-		}
-		int index = 0;
-		Bitly bitly = Bit.ly(currentBitlyToken);
-		String shortURL = null;
-		if (unshortedURL != null && unshortedURL.length() > 0) {
-			try {
-				shortURL = bitly.shorten(unshortedURL);
-			} catch (Exception e) {
-				for (int i = index + 1; i < bitlyTokens.size(); i++) {
-					currentBitlyToken = bitlyTokens.get(i);
-					return shortURL(unshortedURL);
-				}
-			}
-		}
-		return shortURL;
 	}
 
 	private String chnageToOurAffliate(String unshortenUrl) throws URISyntaxException, UnsupportedEncodingException {
