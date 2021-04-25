@@ -201,7 +201,7 @@ public class UnshorterService {
 		deal = replaceWords(deal);
 		List<String> urls = extractUrls(deal);
 		try {
-			String dealTitle = deal.lines().findFirst().get();
+			String dealTitle = deal.substring(0, deal.indexOf("\n"));
 			deal = deal.replace(dealTitle, "*✅ " + dealTitle + "*");
 			Map<String, String> changedURLMap = unshortURL(urls);
 
