@@ -93,6 +93,7 @@ public class GetGoogleSheetContent {
 			}
 			return mrp.toString();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -113,6 +114,7 @@ public class GetGoogleSheetContent {
 			}
 			return mrp.toString();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

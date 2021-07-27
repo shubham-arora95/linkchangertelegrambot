@@ -235,6 +235,7 @@ public class UnshorterService {
 
 			return deal;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return e.getLocalizedMessage();
 		}
 	}
