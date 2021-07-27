@@ -80,9 +80,14 @@ public class GetGoogleSheetContent {
 	public static String getMRPFromAmazon(String amazonURL) {
 		try {
 			Integer mrp = null;
-			Document doc = Jsoup.connect(amazonURL).userAgent(
-					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.38 Safari/537.36")
-					.get();
+			Document doc = null;
+			try {
+				doc = Jsoup.connect(amazonURL).userAgent(
+						"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.38 Safari/537.36")
+						.get();
+			} catch(Exception e) {
+				return null;
+			}
 			Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
 			if (elements.size() > 0) {
 				String mrpString = elements.get(0).text().replaceAll("₹", "");
@@ -91,7 +96,7 @@ public class GetGoogleSheetContent {
 				Double mrpDouble = Double.parseDouble(mrpString);
 				mrp = mrpDouble.intValue();
 			}
-			return mrp.toString();
+			return mrp != null ? mrp.toString() : null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -112,7 +117,7 @@ public class GetGoogleSheetContent {
 				Double mrpDouble = Double.parseDouble(mrpString);
 				mrp = mrpDouble.intValue();
 			}
-			return mrp.toString();
+			return mrp != null ? mrp.toString() : null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
