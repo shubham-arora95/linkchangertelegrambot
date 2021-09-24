@@ -215,7 +215,7 @@ public class UnshorterService {
 				String dealTitle = deal.substring(0, deal.indexOf("\n"));
 				deal = deal.replace(dealTitle, "✅ " + dealTitle.trim());
 			}
-			deal = deal.replaceAll("at", "@").replaceAll("At", "@").replaceAll("Rs", "").replaceAll("Rs.", "").replaceAll("rs", "").replaceAll("rs.", "");
+			deal = deal.replaceAll("at", "@").replaceAll("At", "@").replaceAll("Rs.", "").replaceAll("Rs", "").replaceAll("rs.", "").replaceAll("rs", "");
 			Map<String, Map<String, String>> changedURLMap = unshortURL(urls);
 
 			for (Map.Entry<String, Map<String, String>> entry : changedURLMap.entrySet()) {
