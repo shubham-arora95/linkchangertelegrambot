@@ -14,18 +14,17 @@ public class ShortURLService {
 		if (currentBitlyToken == null) {
 			currentBitlyToken = bitlyTokens.get(currentBitlyIndex);
 		}
-		int index = 0;
-		Bitly bitly = Bit.ly(currentBitlyToken);
 		String shortURL = null;
 		if (unshortedURL != null && unshortedURL.length() > 0) {
-			try {
-				shortURL = bitly.shorten(unshortedURL);
-			} catch (Exception e) {
-				e.printStackTrace();
-				if(currentBitlyIndex < bitlyTokens.size()) {
-					currentBitlyIndex++;
-					currentBitlyToken = bitlyTokens.get(currentBitlyIndex);
-					shortURL(unshortedURL);
+			for(String token : bitlyTokens) {
+				try {
+					Bitly bitly = Bit.ly(token);
+					shortURL = bitly.shorten(unshortedURL);
+					if(shortURL != null) {
+						break;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
