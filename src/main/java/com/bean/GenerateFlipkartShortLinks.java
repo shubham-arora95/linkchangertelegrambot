@@ -79,6 +79,14 @@ public class GenerateFlipkartShortLinks {
 	}
 
 	private String generateEarnlyFlipkartLinks(String fullFlipkartURL) {
+		
+		if (earnlyAuthorization == null) {
+			earnlyAuthorization = loginOnEarnly();
+			if (earnlyAuthorization == null) {
+				return null;
+			}
+		}
+		
 		MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("url", fullFlipkartURL);
@@ -88,12 +96,6 @@ public class GenerateFlipkartShortLinks {
 		URL url = new HttpUrl.Builder().scheme("https").host("red.gopaisa.com").addPathSegment("gotostore")
 				.addPathSegment("get-affiliate-link").build().url();
 
-		if (earnlyAuthorization == null) {
-			earnlyAuthorization = loginOnEarnly();
-			if (earnlyAuthorization == null) {
-				return null;
-			}
-		}
 
 		Request request = new Request.Builder().url(url).addHeader("authorization", earnlyAuthorization).post(body)
 				.build();
@@ -102,6 +104,9 @@ public class GenerateFlipkartShortLinks {
 
 			if (!response.isSuccessful())
 				throw new IOException("Unexpected code " + response);
+			else if (response.code() == 401) {
+				earnlyAuthorization = loginOnEarnly();
+			}
 
 			String jsonString = response.body().string();
 			HashMap<String, String> responseMap = new Gson().fromJson(jsonString,
