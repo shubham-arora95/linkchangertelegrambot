@@ -29,7 +29,7 @@ public class GenerateFlipkartShortLinks {
 			? Boolean.parseBoolean(System.getenv("EARNLY"))
 			: false;
 
-	private static String earnlyAuthorization = null;
+	public static String earnlyAuthorization = null;
 
 	private static final String EARNLY_USERNAME = "nonstopdeals.in@gmail.com";
 
@@ -102,12 +102,13 @@ public class GenerateFlipkartShortLinks {
 
 		try (Response response = httpClient.newCall(request).execute()) {
 
-			if (!response.isSuccessful())
+			if (!response.isSuccessful()) {
+				if (response.code() == 401) {
+					earnlyAuthorization = loginOnEarnly();
+				}
 				throw new IOException("Unexpected code " + response);
-			else if (response.code() == 401) {
-				earnlyAuthorization = loginOnEarnly();
 			}
-
+		
 			String jsonString = response.body().string();
 			HashMap<String, String> responseMap = new Gson().fromJson(jsonString,
 					new TypeToken<HashMap<String, String>>() {

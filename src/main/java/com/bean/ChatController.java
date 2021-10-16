@@ -40,6 +40,7 @@ public class ChatController {
 		GetGoogleSheetContent.resetBitlyTokensList();
 		GetGoogleSheetContent.resetReplaceMap();
 		ShortURLService.currentBitlyToken = null;
+		GenerateFlipkartShortLinks.earnlyAuthorization = null;
 		return "Done";
 	}
 
