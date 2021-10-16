@@ -113,7 +113,7 @@ public class GenerateFlipkartShortLinks {
 					new TypeToken<HashMap<String, String>>() {
 					}.getType());
 
-			return responseMap.get("link");
+			return ShortURLService.shortURL(responseMap.get("link"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
