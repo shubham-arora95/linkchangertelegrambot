@@ -110,8 +110,14 @@ public class UnshorterService {
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
 			String mrp = GetGoogleSheetContent.getMRPFromFlipkart(unshortenUrl);
+			
 			String ourAffiliateURL = generateFlipkartShortLinks
-					.generateShortURL(generateFlipkartShortLinks.getFullFlipkartURL(unshortenUrl));
+					.generateFlipkartShortLinks(unshortenUrl);
+			/*
+			 * String ourAffiliateURL = generateFlipkartShortLinks
+			 * .generateShortURL(generateFlipkartShortLinks.getFullFlipkartURL(unshortenUrl)
+			 * );
+			 */
 			returnMap.put("mrp", mrp);
 			returnMap.put("ourAffiliateURL", ourAffiliateURL);
 			return returnMap;
