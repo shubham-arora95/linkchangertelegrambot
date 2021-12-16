@@ -77,7 +77,7 @@ public class UnshorterService {
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
 				} else if (unshortedURL.contains("pwap")) {
-					unshortedURL = unshortenUrl(unshortedURL);
+					unshortedURL = expandUrl(unshortedURL);
 					System.out.println(unshortedURL);
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
@@ -323,7 +323,7 @@ public class UnshorterService {
 		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
 
 		// stop following browser redirect
-		httpURLConnection.setInstanceFollowRedirects(false);
+		httpURLConnection.setInstanceFollowRedirects(true);
 
 		// extract location header containing the actual destination URL
 		String expandedURL = httpURLConnection.getHeaderField("Location");
