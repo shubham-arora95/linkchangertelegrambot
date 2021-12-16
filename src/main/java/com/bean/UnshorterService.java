@@ -65,6 +65,7 @@ public class UnshorterService {
 			String unshortedURL = s;
 			if (!s.contains("amazon") && !s.contains("flipkart")) {
 				unshortedURL = unshortenUrl(s);
+				System.out.println(unshortedURL);
 				if (unshortedURL.contains("earnkaro")) {
 					unshortedURL = unshortedURL.split("&dl=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
@@ -228,7 +229,7 @@ public class UnshorterService {
 				String key = entry.getKey();
 				Map<String, String> shortURLMap = entry.getValue();
 				if (deal.contains(key)) {
-					if (null != shortURLMap.get("ourAffiliateURL")) {
+					if (null != shortURLMap && null != shortURLMap.get("ourAffiliateURL")) {
 						String mrpString = null;
 						if (shortURLMap.get("mrp") != null) {
 							mrpString = "\n\n" + "✔️ MRP " + shortURLMap.get("mrp");
@@ -288,7 +289,7 @@ public class UnshorterService {
 		shortUrl = shortUrl.replace("\\", "%5C");
 		HttpURLConnection connection = (HttpURLConnection) new URL(shortUrl).openConnection();
 		connection.setRequestProperty("User-Agent",
-				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.38 Safari/537.36");
 
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod("HEAD");
