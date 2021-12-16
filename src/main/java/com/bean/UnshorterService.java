@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -75,6 +76,10 @@ public class UnshorterService {
 				} else if (unshortedURL.contains("linksredirect")) {
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
+				} else if (unshortedURL.contains("pwap.in")) {
+					unshortedURL = expandUrl(unshortedURL);
+					unshortedURL = unshortedURL.split("&url=")[1];
+					unshortedURL = URLDecoder.decode(unshortedURL);
 				}
 			}
 			Map shortURLMap = chnageToOurAffliate(unshortedURL);
@@ -111,9 +116,8 @@ public class UnshorterService {
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
 			String mrp = GetGoogleSheetContent.getMRPFromFlipkart(unshortenUrl);
-			
-			String ourAffiliateURL = generateFlipkartShortLinks
-					.generateFlipkartShortLinks(unshortenUrl);
+
+			String ourAffiliateURL = generateFlipkartShortLinks.generateFlipkartShortLinks(unshortenUrl);
 			/*
 			 * String ourAffiliateURL = generateFlipkartShortLinks
 			 * .generateShortURL(generateFlipkartShortLinks.getFullFlipkartURL(unshortenUrl)
@@ -222,7 +226,8 @@ public class UnshorterService {
 				String dealTitle = deal.substring(0, deal.indexOf("\n"));
 				deal = deal.replace(dealTitle, "✅ " + dealTitle.trim());
 			}
-			deal = deal.replaceAll(" at"," @").replaceAll(" At", " @").replaceAll(" Rs.", "").replaceAll(" Rs", "").replaceAll(" rs.", "").replaceAll(" rs", "");
+			deal = deal.replaceAll(" at", " @").replaceAll(" At", " @").replaceAll(" Rs.", "").replaceAll(" Rs", "")
+					.replaceAll(" rs.", "").replaceAll(" rs", "");
 			Map<String, Map<String, String>> changedURLMap = unshortURL(urls);
 
 			for (Map.Entry<String, Map<String, String>> entry : changedURLMap.entrySet()) {
@@ -234,7 +239,8 @@ public class UnshorterService {
 						if (shortURLMap.get("mrp") != null) {
 							mrpString = "\n\n" + "✔️ MRP " + shortURLMap.get("mrp");
 						}
-						deal = deal.replace(key, shortURLMap.get("ourAffiliateURL") + (mrpString != null ? mrpString : ""));
+						deal = deal.replace(key,
+								shortURLMap.get("ourAffiliateURL") + (mrpString != null ? mrpString : ""));
 					} else {
 						deal = deal.replace(key, "Unable to create");
 					}
@@ -307,5 +313,20 @@ public class UnshorterService {
 			}
 		}
 		return shortUrl;
+	}
+
+	public static String expandUrl(String shortenedUrl) throws IOException {
+		URL url = new URL(shortenedUrl);
+		// open connection
+		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+
+		// stop following browser redirect
+		httpURLConnection.setInstanceFollowRedirects(false);
+
+		// extract location header containing the actual destination URL
+		String expandedURL = httpURLConnection.getHeaderField("Location");
+		httpURLConnection.disconnect();
+
+		return expandedURL;
 	}
 }
