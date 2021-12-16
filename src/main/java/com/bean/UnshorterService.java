@@ -78,6 +78,7 @@ public class UnshorterService {
 					unshortedURL = URLDecoder.decode(unshortedURL);
 				} else if (unshortedURL.contains("pwap")) {
 					unshortedURL = expandUrl(unshortedURL);
+					System.out.println(unshortedURL);
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
 					System.out.println(unshortedURL);
