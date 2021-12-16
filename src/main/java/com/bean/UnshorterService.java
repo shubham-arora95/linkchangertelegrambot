@@ -76,10 +76,11 @@ public class UnshorterService {
 				} else if (unshortedURL.contains("linksredirect")) {
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
-				} else if (unshortedURL.contains("pwap.in")) {
+				} else if (unshortedURL.contains("pwap")) {
 					unshortedURL = expandUrl(unshortedURL);
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
+					System.out.println(unshortedURL);
 				}
 			}
 			Map shortURLMap = chnageToOurAffliate(unshortedURL);
