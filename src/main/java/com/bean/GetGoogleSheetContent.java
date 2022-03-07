@@ -77,18 +77,12 @@ public class GetGoogleSheetContent {
 		return returnList;
 	}
 
-	public static String getMRPFromAmazon(String amazonURL) {
+	public static String getMRPFromAmazon(Document doc) {
+		if(doc == null) return null;
 		try {
 			Integer mrp = null;
-			Document doc = null;
-			try {
-				doc = Jsoup.connect(amazonURL).userAgent(
-						"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.38 Safari/537.36")
-						.get();
-			} catch(Exception e) {
-				return null;
-			}
-			Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
+			//Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
+			Elements elements = doc.getElementsByAttribute("data-a-strike").first().getElementsByClass("a-offscreen");
 			if (elements.size() > 0) {
 				String mrpString = elements.get(0).text().replaceAll("₹", "");
 				mrpString = mrpString.replaceAll(" ", "");
@@ -101,6 +95,37 @@ public class GetGoogleSheetContent {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static String getPercentageDiscountFromAmazon(Document doc) {
+		if(doc == null) return null;
+		try {
+			String percentageDiscount = null;
+			//Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
+			Elements elements = doc.getElementsByClass("savingsPercentage");
+			if (elements.size() > 0) {
+				percentageDiscount = elements.get(0).text().replaceAll("₹", "");
+				percentageDiscount = percentageDiscount.replaceAll(" ", "");
+				percentageDiscount = percentageDiscount.replaceAll(",", "");
+				percentageDiscount = percentageDiscount.replaceAll("-", "");
+			}
+			return percentageDiscount != null ? percentageDiscount.toString() : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Document getAmazonFullPageDoc(String amazonURL) {
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(amazonURL).userAgent(
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.38 Safari/537.36")
+					.get();
+		} catch(Exception e) {
+			return null;
+		}
+		return doc;
 	}
 
 	public static String getMRPFromFlipkart(String flipkartURL) {
@@ -123,4 +148,6 @@ public class GetGoogleSheetContent {
 			return null;
 		}
 	}
+
+	
 }

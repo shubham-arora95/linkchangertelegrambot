@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -108,12 +109,15 @@ public class UnshorterService {
 		}
 
 		if (isAmazonDeal) {
-			String mrp = GetGoogleSheetContent.getMRPFromAmazon(unshortenUrl);
+			Document document = GetGoogleSheetContent.getAmazonFullPageDoc(unshortenUrl);
+			String mrp = GetGoogleSheetContent.getMRPFromAmazon(document);
+			String percentageDiscount = GetGoogleSheetContent.getPercentageDiscountFromAmazon(document);
 			String ourAffiliateURL = generateFlipkartShortLinks
 					.generateAmazonShortLinks(changeAmazonDealLink(unshortenUrl, queryParams));
 			// return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
 			returnMap.put("mrp", mrp);
 			returnMap.put("ourAffiliateURL", ourAffiliateURL);
+			returnMap.put("percentageDiscount", percentageDiscount);
 			return returnMap;
 		} else if (isFlipkartDeal) {
 			// return changeFlipkartDealLink(unshortenUrl, queryParams);
@@ -238,8 +242,15 @@ public class UnshorterService {
 				if (deal.contains(key)) {
 					if (null != shortURLMap && null != shortURLMap.get("ourAffiliateURL")) {
 						String mrpString = null;
+						String percentageDiscount = null;
 						if (shortURLMap.get("mrp") != null) {
 							mrpString = "\n\n" + "✔️ MRP " + shortURLMap.get("mrp");
+						}
+						if (shortURLMap.get("percentageDiscount") != null) {
+							int tickIndex = deal.indexOf("✅ ");
+							if(tickIndex != -1) {
+								deal = deal.replaceAll("✅ ", "✅ " + shortURLMap.get("percentageDiscount") + " Off : ");
+							}
 						}
 						deal = deal.replace(key,
 								shortURLMap.get("ourAffiliateURL") + (mrpString != null ? mrpString : ""));
