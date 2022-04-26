@@ -109,9 +109,9 @@ public class UnshorterService {
 		}
 
 		if (isAmazonDeal) {
-			Document document = GetGoogleSheetContent.getAmazonFullPageDoc(unshortenUrl);
-			String mrp = GetGoogleSheetContent.getMRPFromAmazon(document);
-			String percentageDiscount = GetGoogleSheetContent.getPercentageDiscountFromAmazon(document);
+			Document document = null;//GetGoogleSheetContent.getAmazonFullPageDoc(unshortenUrl);
+			String mrp = null;//GetGoogleSheetContent.getMRPFromAmazon(document);
+			String percentageDiscount = null;//GetGoogleSheetContent.getPercentageDiscountFromAmazon(document);
 			String ourAffiliateURL = generateFlipkartShortLinks
 					.generateAmazonShortLinks(changeAmazonDealLink(unshortenUrl, queryParams));
 			// return shortURL(changeAmazonDealLink(unshortenUrl, queryParams));
