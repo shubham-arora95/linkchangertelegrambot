@@ -102,7 +102,7 @@ public class GetGoogleSheetContent {
 		try {
 			String percentageDiscount = null;
 			//Elements elements = doc.getElementsByClass("priceBlockStrikePriceString");
-			Elements elements = doc.getElementsByClass("savingsPercentage");
+			Elements elements = doc.getElementsByClass("reinventPricePriceToPayPadding");
 			if (elements.size() > 0) {
 				percentageDiscount = elements.get(0).text().replaceAll("₹", "");
 				percentageDiscount = percentageDiscount.replaceAll(" ", "");

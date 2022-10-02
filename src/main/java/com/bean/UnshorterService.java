@@ -67,7 +67,7 @@ public class UnshorterService {
 			String unshortedURL = s;
 			if (!s.contains("amazon") && !s.contains("flipkart")) {
 				unshortedURL = unshortenUrl(s);
-				System.out.println(unshortedURL);
+				//System.out.println(unshortedURL);
 				if (unshortedURL.contains("earnkaro")) {
 					unshortedURL = unshortedURL.split("&dl=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
@@ -79,10 +79,10 @@ public class UnshorterService {
 					unshortedURL = URLDecoder.decode(unshortedURL);
 				} else if (unshortedURL.contains("pwap")) {
 					unshortedURL = expandUrl(unshortedURL);
-					System.out.println(unshortedURL);
+					//System.out.println(unshortedURL);
 					unshortedURL = unshortedURL.split("&url=")[1];
 					unshortedURL = URLDecoder.decode(unshortedURL);
-					System.out.println(unshortedURL);
+					//System.out.println(unshortedURL);
 				}
 			}
 			Map shortURLMap = chnageToOurAffliate(unshortedURL);
