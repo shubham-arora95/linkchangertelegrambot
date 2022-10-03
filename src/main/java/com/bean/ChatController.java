@@ -22,6 +22,8 @@ public class ChatController {
 
 	@Autowired
 	private UnshorterService unshorterService;
+	
+	ExecutorService threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
 
 	@GetMapping("/start")
 	public String start() {
@@ -51,7 +53,7 @@ public class ChatController {
 			return UpdatesListener.CONFIRMED_UPDATES_ALL;
 		}
 		
-		ExecutorService threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
+		
 		
 		for (Update update : updates) {
 			String changedDeal = null;
