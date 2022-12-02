@@ -62,18 +62,18 @@ public class ChatController {
 				threadPool.submit(new DealTask(chatService, unshorterService, bot, update.message().text()));
 				
 				//changedDeal = unshorterService.changedDeal(update.message().text());
-				chatService.saveChat(update.message().chat().id());
+				//chatService.saveChat(update.message().chat().id());
 			} else if (update.message() != null && update.message().caption() != null) {
 				
 				threadPool.submit(new DealTask(chatService, unshorterService, bot, update.message().caption()));
 				
 				//changedDeal = unshorterService.changedDeal(update.message().caption());
-				chatService.saveChat(update.message().chat().id());
+				//chatService.saveChat(update.message().chat().id());
 			} else if (update.channelPost() != null && update.channelPost().text() != null) {
 				threadPool.submit(new DealTask(chatService, unshorterService, bot, update.channelPost().text()));
 
 				//changedDeal = unshorterService.changedDeal(update.channelPost().text());
-				chatService.saveChat(update.channelPost().chat().id());
+				//chatService.saveChat(update.channelPost().chat().id());
 			}
 
 			//postMessage(bot, changedDeal);
